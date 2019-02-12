@@ -1,0 +1,564 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Initializing the enviroment \n",
+    "# importing pandas library\n",
+    "import pandas as pd "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#input train data\n",
+    "x_train=pd.read_csv('/Users/karim/Downloads/heartbeat/mitbih_train.csv', header=None)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 87554 entries, 0 to 87553\n",
+      "Columns: 188 entries, 0 to 187\n",
+      "dtypes: float64(188)\n",
+      "memory usage: 125.6 MB\n"
+     ]
+    }
+   ],
+   "source": [
+    "#EDA\n",
+    "#Getting to know the data\n",
+    "x_train.info()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.0    72471\n",
+       "4.0     6431\n",
+       "2.0     5788\n",
+       "1.0     2223\n",
+       "3.0      641\n",
+       "Name: 187, dtype: int64"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#Weights of Classes\n",
+    "x_train[187].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#importing numpy library\n",
+    "import numpy as np\n",
+    "# placing x_train into a numpy array to be used later on\n",
+    "data = np.array(x_train)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# slicing the last column of ata array to get the Labels (classes)\n",
+    "y_train = np.array(data[:, -1], dtype=np.int32)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# removing the last column of the x_train\n",
+    "x_train=x_train.iloc[:, :-1]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# test data input\n",
+    "x_test=pd.read_csv('/Users/karim/Downloads/heartbeat/mitbih_test.csv', header=None)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# placing x_test into a numpy array to be used later on\n",
+    "testdata = np.array(x_test)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# slicing the last column of ata array to get the Labels (classes)\n",
+    "y_test = np.array(testdata[:, -1], dtype=np.int32)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# removing the last column of the x_test\n",
+    "x_test=x_test.iloc[:, :-1]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>0</th>\n",
+       "      <th>1</th>\n",
+       "      <th>2</th>\n",
+       "      <th>3</th>\n",
+       "      <th>4</th>\n",
+       "      <th>5</th>\n",
+       "      <th>6</th>\n",
+       "      <th>7</th>\n",
+       "      <th>8</th>\n",
+       "      <th>9</th>\n",
+       "      <th>...</th>\n",
+       "      <th>177</th>\n",
+       "      <th>178</th>\n",
+       "      <th>179</th>\n",
+       "      <th>180</th>\n",
+       "      <th>181</th>\n",
+       "      <th>182</th>\n",
+       "      <th>183</th>\n",
+       "      <th>184</th>\n",
+       "      <th>185</th>\n",
+       "      <th>186</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>0.977941</td>\n",
+       "      <td>0.926471</td>\n",
+       "      <td>0.681373</td>\n",
+       "      <td>0.245098</td>\n",
+       "      <td>0.154412</td>\n",
+       "      <td>0.191176</td>\n",
+       "      <td>0.151961</td>\n",
+       "      <td>0.085784</td>\n",
+       "      <td>0.058824</td>\n",
+       "      <td>0.049020</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>0.960114</td>\n",
+       "      <td>0.863248</td>\n",
+       "      <td>0.461538</td>\n",
+       "      <td>0.196581</td>\n",
+       "      <td>0.094017</td>\n",
+       "      <td>0.125356</td>\n",
+       "      <td>0.099715</td>\n",
+       "      <td>0.088319</td>\n",
+       "      <td>0.074074</td>\n",
+       "      <td>0.082621</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.659459</td>\n",
+       "      <td>0.186486</td>\n",
+       "      <td>0.070270</td>\n",
+       "      <td>0.070270</td>\n",
+       "      <td>0.059459</td>\n",
+       "      <td>0.056757</td>\n",
+       "      <td>0.043243</td>\n",
+       "      <td>0.054054</td>\n",
+       "      <td>0.045946</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>0.925414</td>\n",
+       "      <td>0.665746</td>\n",
+       "      <td>0.541436</td>\n",
+       "      <td>0.276243</td>\n",
+       "      <td>0.196133</td>\n",
+       "      <td>0.077348</td>\n",
+       "      <td>0.071823</td>\n",
+       "      <td>0.060773</td>\n",
+       "      <td>0.066298</td>\n",
+       "      <td>0.058011</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>0.967136</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.830986</td>\n",
+       "      <td>0.586854</td>\n",
+       "      <td>0.356808</td>\n",
+       "      <td>0.248826</td>\n",
+       "      <td>0.145540</td>\n",
+       "      <td>0.089202</td>\n",
+       "      <td>0.117371</td>\n",
+       "      <td>0.150235</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>5 rows × 187 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "        0         1         2         3         4         5         6    \\\n",
+       "0  0.977941  0.926471  0.681373  0.245098  0.154412  0.191176  0.151961   \n",
+       "1  0.960114  0.863248  0.461538  0.196581  0.094017  0.125356  0.099715   \n",
+       "2  1.000000  0.659459  0.186486  0.070270  0.070270  0.059459  0.056757   \n",
+       "3  0.925414  0.665746  0.541436  0.276243  0.196133  0.077348  0.071823   \n",
+       "4  0.967136  1.000000  0.830986  0.586854  0.356808  0.248826  0.145540   \n",
+       "\n",
+       "        7         8         9   ...   177  178  179  180  181  182  183  184  \\\n",
+       "0  0.085784  0.058824  0.049020 ...   0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0   \n",
+       "1  0.088319  0.074074  0.082621 ...   0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0   \n",
+       "2  0.043243  0.054054  0.045946 ...   0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0   \n",
+       "3  0.060773  0.066298  0.058011 ...   0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0   \n",
+       "4  0.089202  0.117371  0.150235 ...   0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0   \n",
+       "\n",
+       "   185  186  \n",
+       "0  0.0  0.0  \n",
+       "1  0.0  0.0  \n",
+       "2  0.0  0.0  \n",
+       "3  0.0  0.0  \n",
+       "4  0.0  0.0  \n",
+       "\n",
+       "[5 rows x 187 columns]"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "x_train.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 87554 entries, 0 to 87553\n",
+      "Columns: 187 entries, 0 to 186\n",
+      "dtypes: float64(187)\n",
+      "memory usage: 124.9 MB\n"
+     ]
+    }
+   ],
+   "source": [
+    "x_train.info()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# importing Logistic Regression from SciKitLearn\n",
+    "from sklearn.linear_model import LogisticRegression\n",
+    "logisticRegr = LogisticRegression()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/anaconda3/lib/python3.7/site-packages/sklearn/linear_model/logistic.py:433: FutureWarning: Default solver will be changed to 'lbfgs' in 0.22. Specify a solver to silence this warning.\n",
+      "  FutureWarning)\n",
+      "/anaconda3/lib/python3.7/site-packages/sklearn/linear_model/logistic.py:460: FutureWarning: Default multi_class will be changed to 'auto' in 0.22. Specify the multi_class option to silence this warning.\n",
+      "  \"this warning.\", FutureWarning)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,\n",
+       "          intercept_scaling=1, max_iter=100, multi_class='warn',\n",
+       "          n_jobs=None, penalty='l2', random_state=None, solver='warn',\n",
+       "          tol=0.0001, verbose=0, warm_start=False)"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# training the model\n",
+    "logisticRegr.fit(x_train, y_train)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.9058560204640965\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Use score method to get accuracy of model\n",
+    "score = logisticRegr.score(x_test, y_test)\n",
+    "print(score)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# importing Decision Tree Classifier from SciKitLearn\n",
+    "from sklearn.tree import DecisionTreeClassifier\n",
+    "DTC=DecisionTreeClassifier()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,\n",
+       "            max_features=None, max_leaf_nodes=None,\n",
+       "            min_impurity_decrease=0.0, min_impurity_split=None,\n",
+       "            min_samples_leaf=1, min_samples_split=2,\n",
+       "            min_weight_fraction_leaf=0.0, presort=False, random_state=None,\n",
+       "            splitter='best')"
+      ]
+     },
+     "execution_count": 38,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#training the model\n",
+    "DTC.fit(x_train,y_train)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.9539101041476339\n"
+     ]
+    }
+   ],
+   "source": [
+    "DTCScore = DTC.score(x_test, y_test)\n",
+    "print(DTCScore)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# importing Support Vector Machines Classifier from SciKitLearn\n",
+    "from sklearn.svm import SVC\n",
+    "svClass=SVC()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/anaconda3/lib/python3.7/site-packages/sklearn/svm/base.py:196: FutureWarning: The default value of gamma will change from 'auto' to 'scale' in version 0.22 to account better for unscaled features. Set gamma explicitly to 'auto' or 'scale' to avoid this warning.\n",
+      "  \"avoid this warning.\", FutureWarning)\n"
+     ]
+    }
+   ],
+   "source": [
+    "#training the model\n",
+    "svClass.fit(x_train,y_train)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Use score method to get accuracy of model\n",
+    "svScore=svClass.score(x_test,y_test)\n",
+    "print(svScore)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.1"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
