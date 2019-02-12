@@ -1,3 +1,6 @@
-# ECGHeartbeatClassification
-# 5 classes , 84% of data is Class 0
+# ECG Heartbeat Categorization Dataset
+# egmented and Preprocessed ECG Signals for Heartbeat Classification
+# 5 classes, ['N', 'S', 'V', 'F', 'Q']: [0, 1, 2, 3, 4]
+# Multi Class Classification is applied
+
 
